@@ -1,0 +1,110 @@
+import React, { useState } from "react";
+
+export default function App() {
+  const [stanOgolny, setStanOgolny] = useState("");
+  const [urazGlowy, setUrazGlowy] = useState("");
+  const [specjalizacja, setSpecjalizacja] = useState("");
+
+  const generujTekst = () => {
+    let tekst = "";
+
+    if (stanOgolny) {
+      tekst += `Stan ogólny pacjenta ${stanOgolny}. `;
+    }
+
+    if (urazGlowy === "tak") {
+      tekst += "Uraz głowy potwierdza. ";
+    } else if (urazGlowy === "nie") {
+      tekst += "Uraz głowy neguje. ";
+    } else if (urazGlowy === "objawy") {
+      tekst += "Uraz głowy deklaruje na podstawie objawów dodatkowych. ";
+    }
+
+    return tekst;
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generujTekst());
+    alert("Skopiowano do schowka!");
+  };
+
+  if (!specjalizacja) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <h1 className="text-3xl font-bold mb-6 animate-fade-in">Witaj w aplikacji do wywiadu lekarskiego</h1>
+        <p className="mb-4">Wybierz specjalizację, aby rozpocząć:</p>
+        <button
+          onClick={() => setSpecjalizacja("ortopedia")}
+          className="px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          Ortopedia i Traumatologia Narządu Ruchu
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen font-sans">
+      {/* Lewa kolumna */}
+      <div className="w-1/2 p-8 bg-gray-100 overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">Formularz – Ortopedia</h2>
+
+        <div className="mb-6">
+          <label className="block font-semibold mb-2">Stan ogólny:</label>
+          {[
+            { label: "Dobry", value: "dobry" },
+            { label: "Średni", value: "średni" },
+            { label: "Ciężki", value: "ciężki" },
+          ].map((opt) => (
+            <label key={opt.value} className="block">
+              <input
+                type="radio"
+                name="stanOgolny"
+                value={opt.value}
+                checked={stanOgolny === opt.value}
+                onChange={(e) => setStanOgolny(e.target.value)}
+              />
+              <span className="ml-2">{opt.label}</span>
+            </label>
+          ))}
+        </div>
+
+        <div className="mb-6">
+          <label className="block font-semibold mb-2">Uraz głowy:</label>
+          {[
+            { label: "Tak", value: "tak" },
+            { label: "Nie", value: "nie" },
+            { label: "Objawy dodatkowe", value: "objawy" },
+          ].map((opt) => (
+            <label key={opt.value} className="block">
+              <input
+                type="radio"
+                name="urazGlowy"
+                value={opt.value}
+                checked={urazGlowy === opt.value}
+                onChange={(e) => setUrazGlowy(e.target.value)}
+              />
+              <span className="ml-2">{opt.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Prawa kolumna */}
+      <div className="w-1/2 p-8 bg-white flex flex-col justify-between">
+        <div>
+          <h2 className="text-xl font-bold mb-4">Wygenerowany wywiad</h2>
+          <div className="whitespace-pre-wrap border border-gray-300 p-4 rounded min-h-[200px] bg-gray-50 text-lg">
+            {generujTekst() || <span className="text-gray-400">Zacznij wypełniać formularz...</span>}
+          </div>
+        </div>
+        <button
+          onClick={handleCopy}
+          className="mt-6 self-end bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+        >
+          Kopiuj tekst
+        </button>
+      </div>
+    </div>
+  );
+}
